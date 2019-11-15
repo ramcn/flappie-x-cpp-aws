@@ -8,8 +8,6 @@
 
 #include "layers.h"
 #include "models/flipflop_r941native.h"
-#include "models/flipflop_r941native5mC.h"
-#include "models/flipflop_r10Cpcr.h"
 #include "networks.h"
 #include "nnfeatures.h"
 #include "flappie_stdlib.h"
@@ -69,10 +67,6 @@ transition_function_ptr get_transition_function(const enum model_type model){
     switch(model){
     case FLAPPIE_MODEL_R941_NATIVE:
         return flipflop_transitions_r941native;
-    case FLAPPIE_MODEL_R941_5mC:
-        return flipflop_transitions_r941native5mC;
-    case FLAPPIE_MODEL_R10C_PCR:
-        return flipflop_transitions_r10Cpcr;
     case FLAPPIE_MODEL_INVALID:
         errx(EXIT_FAILURE, "Invalid Flappie model  %s:%d", __FILE__, __LINE__);
     default:
@@ -184,70 +178,6 @@ guppy_model flipflop_r941native_guppy = {
     //  Output
     .FF_W = &_FF_rnnrf_flipflop_r941native_W,
     .FF_b = &_FF_rnnrf_flipflop_r941native_b
-};
-
-
-guppy_model flipflop_r941native5mC_guppy = {
-    //  Convolution layer
-    .conv_W = &_conv_rnnrf_flipflop_r941native5mC_W,
-    .conv_b = &_conv_rnnrf_flipflop_r941native5mC_b,
-    .conv_stride = conv_rnnrf_flipflop_r941native5mC_stride,
-    //.conv_stride = 2,
-    //  First modified GRU (backward)
-    .gruB1_iW = &_gruB1_rnnrf_flipflop_r941native5mC_iW,
-    .gruB1_sW = &_gruB1_rnnrf_flipflop_r941native5mC_sW,
-    .gruB1_b = &_gruB1_rnnrf_flipflop_r941native5mC_b,
-    //  Second modified GRU (forward)
-    .gruF2_iW = &_gruF2_rnnrf_flipflop_r941native5mC_iW,
-    .gruF2_sW = &_gruF2_rnnrf_flipflop_r941native5mC_sW,
-    .gruF2_b = &_gruF2_rnnrf_flipflop_r941native5mC_b,
-    //  Third modified GRU (backward)
-    .gruB3_iW = &_gruB3_rnnrf_flipflop_r941native5mC_iW,
-    .gruB3_sW = &_gruB3_rnnrf_flipflop_r941native5mC_sW,
-    .gruB3_b = &_gruB3_rnnrf_flipflop_r941native5mC_b,
-    //  Fourth modified GRU (forward)
-    .gruF4_iW = &_gruF4_rnnrf_flipflop_r941native5mC_iW,
-    .gruF4_sW = &_gruF4_rnnrf_flipflop_r941native5mC_sW,
-    .gruF4_b = &_gruF4_rnnrf_flipflop_r941native5mC_b,
-    //  Fifth modified GRU (backward)
-    .gruB5_iW = &_gruB5_rnnrf_flipflop_r941native5mC_iW,
-    .gruB5_sW = &_gruB5_rnnrf_flipflop_r941native5mC_sW,
-    .gruB5_b = &_gruB5_rnnrf_flipflop_r941native5mC_b,
-    //  Output
-    .FF_W = &_FF_rnnrf_flipflop_r941native5mC_W,
-    .FF_b = &_FF_rnnrf_flipflop_r941native5mC_b
-};
-
-
-guppy_model flipflop_r10Cpcr_guppy = {
-    //  Convolution layer
-    .conv_W = &_conv_rnnrf_flipflop_r10Cpcr_W,
-    .conv_b = &_conv_rnnrf_flipflop_r10Cpcr_b,
-    .conv_stride = conv_rnnrf_flipflop_r10Cpcr_stride,
-    //.conv_stride = 2,
-    //  First modified GRU (backward)
-    .gruB1_iW = &_gruB1_rnnrf_flipflop_r10Cpcr_iW,
-    .gruB1_sW = &_gruB1_rnnrf_flipflop_r10Cpcr_sW,
-    .gruB1_b = &_gruB1_rnnrf_flipflop_r10Cpcr_b,
-    //  Second modified GRU (forward)
-    .gruF2_iW = &_gruF2_rnnrf_flipflop_r10Cpcr_iW,
-    .gruF2_sW = &_gruF2_rnnrf_flipflop_r10Cpcr_sW,
-    .gruF2_b = &_gruF2_rnnrf_flipflop_r10Cpcr_b,
-    //  Third modified GRU (backward)
-    .gruB3_iW = &_gruB3_rnnrf_flipflop_r10Cpcr_iW,
-    .gruB3_sW = &_gruB3_rnnrf_flipflop_r10Cpcr_sW,
-    .gruB3_b = &_gruB3_rnnrf_flipflop_r10Cpcr_b,
-    //  Fourth modified GRU (forward)
-    .gruF4_iW = &_gruF4_rnnrf_flipflop_r10Cpcr_iW,
-    .gruF4_sW = &_gruF4_rnnrf_flipflop_r10Cpcr_sW,
-    .gruF4_b = &_gruF4_rnnrf_flipflop_r10Cpcr_b,
-    //  Fifth modified GRU (backward)
-    .gruB5_iW = &_gruB5_rnnrf_flipflop_r10Cpcr_iW,
-    .gruB5_sW = &_gruB5_rnnrf_flipflop_r10Cpcr_sW,
-    .gruB5_b = &_gruB5_rnnrf_flipflop_r10Cpcr_b,
-    //  Output
-    .FF_W = &_FF_rnnrf_flipflop_r10Cpcr_W,
-    .FF_b = &_FF_rnnrf_flipflop_r10Cpcr_b
 };
 
 
@@ -436,12 +366,4 @@ flappie_matrix flipflop_relu_transitions(const raw_table signal, float temperatu
 
 flappie_matrix flipflop_transitions_r941native(const raw_table signal, float temperature){
     return flipflop_guppy_transitions(signal, temperature, &flipflop_r941native_guppy);
-}
-
-flappie_matrix flipflop_transitions_r941native5mC(const raw_table signal, float temperature){
-    return flipflop_guppy_transitions(signal, temperature, &flipflop_r941native5mC_guppy);
-}
-
-flappie_matrix flipflop_transitions_r10Cpcr(const raw_table signal, float temperature){
-    return flipflop_guppy_transitions(signal, temperature, &flipflop_r10Cpcr_guppy);
 }

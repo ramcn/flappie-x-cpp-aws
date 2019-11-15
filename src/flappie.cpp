@@ -28,15 +28,11 @@
 #if !defined(FLAPPIE_VERSION)
 #    define FLAPPIE_VERSION "unknown"
 #endif
-const char *argp_program_version = "flappie " FLAPPIE_VERSION;
-const char *argp_program_bug_address = "<tim.massingham@nanoporetech.com>";
 
 // Doesn't play nice with other headers, include last
 #include <argp.h>
 
 
-extern const char *argp_program_version;
-extern const char *argp_program_bug_address;
 static char doc[] = "Flappie basecaller -- basecall from raw signal";
 static char args_doc[] = "fast5 [fast5 ...]";
 static struct argp_option options[] = {
@@ -82,22 +78,23 @@ struct arguments {
 };
 
 static struct arguments args = {
-    .compression_level = 1,
-    .compression_chunk_size = 200,
-    .trace = NULL,
-    .limit = 0,
-    .model = DEFAULT_MODEL,
-    .output = NULL,
-    .outformat = FLAPPIE_OUTFORMAT_FASTQ,
-    .prefix = "",
-    .temperature = 1.0f,
-    .trim_start = 200,
-    .trim_end = 10,
-    .varseg_chunk = 100,
-    .varseg_thresh = 0.0f,
-    .files = NULL,
-    .uuid = true
+     1,
+     200,
+     NULL,
+    FLAPPIE_OUTFORMAT_FASTQ,
+     0,
+     DEFAULT_MODEL,
+     NULL,
+    "",
+     1.0f,
+     200,
+    10,
+     100,
+    0.0f,
+     NULL,
+     true
 };
+
 
 
 void fprint_flappie_models(FILE * fh, enum model_type default_model){
@@ -281,10 +278,6 @@ int main(int argc, char * argv[]){
     }
 
     //hid_t hdf5out = open_or_create_hdf5(args.trace);
-    #include <sys/time.h>
-    struct timeval start, end_time;
-    long useconds, seconds, mseconds;
-    gettimeofday(&start, NULL);
 
 
     int nfile = 0;
@@ -358,10 +351,5 @@ int main(int argc, char * argv[]){
         fclose(args.output);
     }
 
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing basecalling): %ld msec\n", mseconds );
     return EXIT_SUCCESS;
 }
