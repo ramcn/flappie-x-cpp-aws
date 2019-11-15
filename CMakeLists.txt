@@ -59,17 +59,21 @@ configure_file (
 ##
 include_directories ("${PROJECT_BINARY_DIR}/include")
 if (OPENBLAS_ROOT)
+	message("*********************************************************++++++++++++++++++++++++++++++++")
+	message(${OPENBLAS_ROOT})
 	include_directories ("${OPENBLAS_ROOT}/include")
 	link_directories ("${OPENBLAS_ROOT}/lib64")
 	set (BLAS "openblas")
 else ()
-	set (BLAS "satlas")
+	link_directories ("${OPENBLAS_ROOT}/lib64")
+	set (BLAS "blas")
 endif ()
 if (HDF5_ROOT)
 	include_directories ("${HDF5_ROOT}/include")
 	link_directories ("${HDF5_ROOT}/lib")
 	set (CMAKE_REQUIRED_INCLUDES ${HDF5_ROOT}/include)
 endif()
+
 
 
 ##

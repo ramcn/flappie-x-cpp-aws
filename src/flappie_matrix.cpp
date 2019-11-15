@@ -6,11 +6,15 @@
  *  http://nanoporetech.com
  */
 
-#ifdef __APPLE__
-#    include <Accelerate/Accelerate.h>
-#else
-#    include <cblas.h>
-#endif
+#ifdef __cplusplus
+extern "C"
+{
+#endif //__cplusplus
+   #include <cblas.h>
+#ifdef __cplusplus
+}
+#endif //__cplusplus
+
 #include <float.h>
 #include <math.h>
 #include "flappie_matrix.h"
