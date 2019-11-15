@@ -229,17 +229,21 @@ fast5_raw_scaling get_raw_scaling(hid_t hdf5file) {
 
 
 raw_table read_raw(const char *filename, bool scale_to_pA) {
+    herr_t status;
+    float *rawptr;
+    hid_t space, dset, ugroup, hdf5file;
+    char *root, *name, *dset_path, *uuid , *signal_path;
     assert(NULL != filename);
     raw_table rawtbl = { NULL, 0, 0, 0, NULL };
 
-    hid_t hdf5file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
+    hdf5file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
     if (hdf5file < 0) {
         warnx("Failed to open %s for reading.", filename);
         return rawtbl;
     }
     H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
 
-    const char *root = "/Raw/Reads/";
+    root = "/Raw/Reads/";
     const int rootstr_len = strlen(root);
     ssize_t size =
         H5Lget_name_by_idx(hdf5file, root, H5_INDEX_NAME, H5_ITER_INC, 0, NULL,
@@ -248,33 +252,33 @@ raw_table read_raw(const char *filename, bool scale_to_pA) {
         warnx("Failed find read name under %s.", root);
         goto cleanup1;
     }
-    char *name = calloc(1 + size, sizeof(char));
+    name = calloc(1 + size, sizeof(char));
     H5Lget_name_by_idx(hdf5file, root, H5_INDEX_NAME, H5_ITER_INC, 0, name,
                        1 + size, H5P_DEFAULT);
 
     // uuid pat
-    char * dset_path = calloc(rootstr_len + size + 1, sizeof(char));
+    dset_path = calloc(rootstr_len + size + 1, sizeof(char));
     (void)snprintf(dset_path, rootstr_len + size + 1, "%s%s", root, name);
-    hid_t ugroup = H5Gopen(hdf5file, dset_path, H5P_DEFAULT);
+    ugroup = H5Gopen(hdf5file, dset_path, H5P_DEFAULT);
     if(ugroup < 0){
         warnx("Failed to find read_id under %s.", dset_path);
         goto cleanup1_1;
     }
-    char * uuid = read_string_attribute(ugroup, "read_id");
+    uuid = read_string_attribute(ugroup, "read_id");
     H5Gclose(ugroup);
 
     // Create group name
-    char *signal_path = calloc(rootstr_len + size + 8, sizeof(char));
+    signal_path = calloc(rootstr_len + size + 8, sizeof(char));
     (void)snprintf(signal_path, rootstr_len + size + 8, "%s%s/Signal", root, name);
 
-    hid_t dset = H5Dopen(hdf5file, signal_path, H5P_DEFAULT);
+    dset = H5Dopen(hdf5file, signal_path, H5P_DEFAULT);
     if (dset < 0) {
         warnx("Failed to open dataset '%s' to read raw signal from.",
               signal_path);
         goto cleanup2;
     }
 
-    hid_t space = H5Dget_space(dset);
+    space = H5Dget_space(dset);
     if (space < 0) {
         warnx("Failed to create copy of dataspace for raw signal %s.",
               signal_path);
@@ -282,9 +286,8 @@ raw_table read_raw(const char *filename, bool scale_to_pA) {
     }
     hsize_t nsample;
     H5Sget_simple_extent_dims(space, &nsample, NULL);
-    float *rawptr = calloc(nsample, sizeof(float));
-    herr_t status =
-        H5Dread(dset, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rawptr);
+    rawptr = calloc(nsample, sizeof(float));
+    status = H5Dread(dset, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rawptr);
     if (status < 0) {
         free(rawptr);
         free(uuid);
