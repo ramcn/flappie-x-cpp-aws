@@ -110,9 +110,8 @@ if (NOT DEFINED CHAOSMONKEY)
 endif ()
 
 
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -Wall -Wunused-function -Wunused-value -Wunused-parameter -fstack-protector-all  -O3 -march=native -DUSE_SSE2 -D__USE_MISC -D_POSIX_SOURCE -DNDEBUG")
-set (CMAKE_CXX_FLAGS_CHAOS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-function -fstack-protector-all -g -march=native -DUSE_SSE2 -D__USE_MISC -D_POSIX_SOURCE -DNDEBUG -DCHAOSMONKEY=${CHAOSMONKEY}")
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}  -Wall -Wno-cpp -DABORT_ON_NULL -Wno-unused-function -fstack-protector-all  -g -march=native  -DUSE_SSE2 -D__USE_MISC -D_POSIX_SOURCE")
+#set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}  -Wall -Wno-cpp -DABORT_ON_NULL -Wno-unused-function -fstack-protector-all  -g -march=native  -DUSE_SSE2 -D__USE_MISC -D_POSIX_SOURCE")
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}")
 
 
 # Find right hdf5 file
